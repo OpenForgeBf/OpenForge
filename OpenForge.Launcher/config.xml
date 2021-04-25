@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<application dxdisable="0" screenaaquality="0" screenaasamples="0" screenvsync="OFF" screenrefresh="0" maxshader="0" fullscreen="0" screenheight="768" screenwidth="1024" framemode="8" createshaderondemand="1" runmode="Active" simd="1" threads="-1" language="en_US" lowqualitysounds="0" fx3dvolume="0.700000" musicvolume="0.520000" speechvolume="0.770000" ambientvolume="0.320000" uivolume="0.700000" globalvolume="1.000000" pregamemusic="1" showtutorials="1" />
+<display activatefpslimit="0" inactivefpslimit="10" threading="0" />
+<minidump datasegs="0" fullmemory="0" handledata="0" filtermemory="0" scanmemory="0" unloadedmodules="0" indirectlyreferencedmemory="0" filtermodulepaths="0" porcessthreaddata="0" privatereadwritememory="0" nooptionaldata="0" />
+<debugmain optionfileaccessdonotlogdupes="1" optionfileaccesslogfile="" optionlogfileaccess="0" />
+<display9 srgbblend="-1" />
+<meta testcase="0" lastvendorid="4318" lastdeviceid="7684" lastdriverversion="0.0.0.0" forcecheckdriver="0" forcechecksettings="0" />
+<vismain optionshadowmapfilter="0" optionshadowobjects="0" optionshadowmap="0" optionenableskydome="1" optiontexturesizebias="0" optionenableautoexposure="0" optionenableglow="0" optionterraintextureanisotropy="1" filtermaxdistance="150" optionenablecloudshadow="0" optionshaderlod="0" optiongamma="1.000000" optionssao="0" optionscalecamshakes="1.000000" />
+<fxbudgetmanager quality="0" sfpsimulationrate="0" />
+<ui tooltipdefaultdelay="1.000000" />
+<gui hotkeylayout="Default" skip_intro_movies="0" ea_movie_watched="1" borderscrolling="1" mousescrolling="1" mousebuttonscrollingspeed="20.000000" borderscrollingspeed="30.000000" keyboardscrollingspeed="60.000000" saveallreplays="0" activespecialdisplaymode="1" groupautojoin="1" groupautocreate="1" groupdisplaymode="1" groupdraganddrop="1" groupingroupsupport="0" groupnumberathealthbar="0" showsubtitles="0" camautomove="1" voicealerts="1" />
+<pregame card_state_source="" show_card_debug_infos="0" record_movie="0" />
+<network serveruri="127.0.0.1:7399" loginname="" />
+<chat fontsize="0" />
