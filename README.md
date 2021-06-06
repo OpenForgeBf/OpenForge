@@ -1,4 +1,4 @@
-# OpenForge
+# OpenForge (Phase 2 out now!)
 
 ![OpenForge](images/logo.png "OpenForge")
 
@@ -90,13 +90,9 @@ Contributing to OpenForge is done through GitHub, using the Pull Request (PR) sy
 Here is a simple [Guide to Submitting Pull Request](https://www.freecodecamp.org/news/how-to-make-your-first-pull-request-on-github-3/)
 
 In the future, we will have a more defined process & workflow for certain types of content. However, for now here are some basic guidelines for pull requests:
-* Reference an [Issue](https://github.com/OpenTournament/OpenTournament/issues) in every PR. Format should be OT-<IssueNumber>
+* Reference an [Issue](https://github.com/OpenForgeBf/OpenForge/issues) in every PR. Format should be OT-<IssueNumber>
 * Try to make it easy to understand both the intent of your changes and the changes themselves.
 * Limit Scope of PRs as much as possible
-* If your PR contains any blueprint changes, please provide before/after screenshots of any changed logic.
-* If your PR contains any blueprint changes, but these changes are value-only, a detailed summary of changes made (Old Value -> New Value) is sufficient.
-* If your PR contains edits to materials, textures, or other visual content please provide screenshots & detailed summary of changes.
-* If your PR contains edits to maps, please provide screenshots & detailed summary of changes.
 
 Unfortunately while there is extra effort on the developer side, this is needed in order to keep the PR and review process manageable!
 _______________________________________________________________________________________
