@@ -16,6 +16,7 @@ Licensed under `GNU General Public License v3.0`.
 
 The **OpenForge** project is run by volunteer efforts from veteran and amateur developers.
 
+* Check our [Website](https://openforgebf.github.io/)
 * Follow the [Setting Up OpenForge Guide](#SettingUpOpenForge)
 * Join [Discord](https://discord.com/invite/wXvshWrNPK) for real-time communication and collaboration.
 * Check our [Issues](https://github.com/OpenForge/OpenForge/issues)
