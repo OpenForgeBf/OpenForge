@@ -58,10 +58,10 @@
               <!--<SolidColorBrush Color="Black" Opacity="0.7"></SolidColorBrush>-->
             </StackPanel.Background>
             <TextBlock Foreground="White" FontSize="25" Margin="10,60,0,0">
-              OpenForge multiplayer available soon!
+              OpenForge multiplayer available now!
             </TextBlock>
             <TextBlock Foreground="#BBBBBB" Margin="10,0,0,0">
-              Soon you will be able to experience BattleForge with your friends using locally hosted multiplayer!
+              Now you will be able to experience BattleForge with your friends using locally hosted multiplayer!
             </TextBlock>
           </StackPanel>
         </Canvas>
