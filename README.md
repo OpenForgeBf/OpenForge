@@ -92,7 +92,7 @@ Contributing to OpenForge is done through GitHub, using the Pull Request (PR) sy
 Here is a simple [Guide to Submitting Pull Request](https://www.freecodecamp.org/news/how-to-make-your-first-pull-request-on-github-3/)
 
 In the future, we will have a more defined process & workflow for certain types of content. However, for now here are some basic guidelines for pull requests:
-* Reference an [Issue](https://github.com/OpenTournament/OpenTournament/issues) in every PR. Format should be OT-<IssueNumber>
+* Reference an [Issue](https://github.com/OpenForgeBf/OpenForge/issues) in every PR. Format should be OT-<IssueNumber>
 * Try to make it easy to understand both the intent of your changes and the changes themselves.
 * Limit Scope of PRs as much as possible
 
