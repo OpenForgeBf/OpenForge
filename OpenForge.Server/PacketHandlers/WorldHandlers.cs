@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Linq;
 using NLog;
 using OpenForge.Server.Database.Memory;
 using OpenForge.Server.Enumerations;
@@ -37,26 +38,48 @@ namespace OpenForge.Server.PacketHandlers
                 IdGroupLeader = (long)leader.ID,
                 Player = session.Player.GetWorldPlayer()
             });
+
             return new CNetAcceptGroupInviteRMR(true)
             {
-                Status = 1,
+                Status = 0,
                 Group = group.GetWorldGroup()
             };
         }
 
         public static CNetAcceptRequestDeckRMR AcceptRequestDeckRMC(Session session, CNetAcceptRequestDeckRMC data)
         {
+            var target = Player.GetPlayerByID(data.IdTargetCharacter);
+            var deck = session.Player.GetDeck(data.IdCurrentDeck);
+
+            target.Send(new CNetRequestDeckAcceptedNotification(true)
+            {
+                DeckOwner = session.Player.GetWorldPlayer(),
+                DeckName = deck.DeckName,
+                IdCardPool = deck.IdCardPool,
+                DeckLevel = deck.DeckLevel,
+                CoverCard = deck.CoverCard,
+                Cards = deck.Cards.Select(deckCard => deckCard.Card).ToArray()
+            });
+
             return new CNetAcceptRequestDeckRMR(true)
             {
-                Status = 1
+                Status = 0
             };
         }
 
         public static CNetAcceptShowDeckRMR AcceptShowDeckRMC(Session session, CNetAcceptShowDeckRMC data)
         {
+            var target = Player.GetPlayerByID(data.IdTargetCharacter);
+
+            target.Send(new CNetShowDeckAcceptedNotification(true)
+            {
+                RequestCharacter = session.Player.GetWorldPlayer(),
+                Accepted = data.Accepted
+            });
+
             return new CNetAcceptShowDeckRMR(true)
             {
-                Status = 1
+                Status = 0
             };
         }
 
@@ -112,27 +135,6 @@ namespace OpenForge.Server.PacketHandlers
 
         public static CNetChangeCharacterLocationStateRMR ChangeCharacterLocationStateRMC(Session session, CNetChangeCharacterLocationStateRMC data)
         {
-            /*
-            Group group = session.Player.GetActiveGroup();
-            if (group == null)
-                throw new NullReferenceException("Player game without group?");
-            Group.Match match = group.OngoingMatch;
-            if (group == null)
-                throw new NullReferenceException("Group without match?"); */
-
-            /*
-            if (data.Location != LocationType.Ingame && data.Location != LocationType.LoadingScreen)
-            {
-                //match.CurrentMatch = null;
-
-                /*
-                session.Send(new CNetGroupDestroyedNotification(true)
-                {
-                    IdGroup = match.CurrentGroupIndex,
-                    VersionId = 1,
-                });
-            }*/
-
             var lastLocation = session.Player.Location;
             session.Player.Location = data.Location;
             session.Player.State = data.State;
@@ -144,7 +146,7 @@ namespace OpenForge.Server.PacketHandlers
                 Logger.Info($"{session.Player.Name}: {Enum.GetName(typeof(LocationType), session.Player.Location)}, {session.Player.Map}");
                 group.NotifyLocation(session.Player);
 
-                if (lastLocation == LocationType.PostgameStatistics && group.Players.Count == 0)
+                if (lastLocation == LocationType.PostgameStatistics && !group.HasMembers)
                 {
                     group.Disband();
                 }
@@ -184,9 +186,16 @@ namespace OpenForge.Server.PacketHandlers
 
         public static CNetDeclineRequestDeckRMR DeclineRequestDeckRMC(Session session, CNetDeclineRequestDeckRMC data)
         {
+            var target = Player.GetPlayerByID(data.IdTargetCharacter);
+
+            target.Send(new CNetDeclineRequestDeckNotification(true)
+            {
+                Decliner = target.GetWorldPlayer()
+            });
+
             return new CNetDeclineRequestDeckRMR(true)
             {
-                Status = 1
+                Status = 0
             };
         }
 
@@ -196,7 +205,7 @@ namespace OpenForge.Server.PacketHandlers
 
             if (group != null)
             {
-                group.SendToMembers(new CNetDistributeValueToGroupMembersNotification(true)
+                group.Send(new CNetDistributeValueToGroupMembersNotification(true)
                 {
                     IdGroup = group.ID,
                     Key = data.Key,
@@ -419,12 +428,12 @@ namespace OpenForge.Server.PacketHandlers
 
             target.Send(new CNetInviteToGroupNotification(true)
             {
-                Leader = session.Player.GetWorldPlayer()//target.GetWorldPlayer()
+                Leader = session.Player.GetWorldPlayer()
             });
 
             return new CNetInvitePlayerToGroupRMR(true)
             {
-                Status = 1
+                Status = 0
             };
         }
 
@@ -510,9 +519,16 @@ namespace OpenForge.Server.PacketHandlers
 
         public static CNetRequestDeckRMR RequestDeckRMC(Session session, CNetRequestDeckRMC data)
         {
+            var target = Player.GetPlayerByID(data.IdTargetCharacter);
+
+            target.Send(new CNetRequestDeckNotification(true)
+            {
+                RequestingCharacter = session.Player.GetWorldPlayer()
+            });
+
             return new CNetRequestDeckRMR(true)
             {
-                Status = 1
+                Status = 0
             };
         }
 
@@ -520,8 +536,8 @@ namespace OpenForge.Server.PacketHandlers
         {
             return new CNetSearchPlayerRMR(true)
             {
-                Status = 1,
-                Players = new CNetWorldPlayerVO[0]
+                Status = 0,
+                Players = Player.SearchOnlinePlayers(data.SearchString).Select(player => player.GetWorldPlayer()).ToArray()
             };
         }
 
@@ -535,9 +551,22 @@ namespace OpenForge.Server.PacketHandlers
 
         public static CNetShowDeckRMR ShowDeckRMC(Session session, CNetShowDeckRMC data)
         {
+            var target = Player.GetPlayerByID(data.IdTargetCharacter);
+            var deck = session.Player.GetDeck(data.IdCurrentDeck);
+
+            target.Send(new CNetShowDeckNotification(true)
+            {
+                DeckOwner = session.Player.GetWorldPlayer(),
+                DeckName = deck.DeckName,
+                IdCardPool = deck.IdCardPool,
+                DeckLevel = deck.DeckLevel,
+                CoverCard = deck.CoverCard,
+                Cards = deck.Cards.Select(deckCard => deckCard.Card).ToArray()
+            });
+
             return new CNetShowDeckRMR(true)
             {
-                Status = 1
+                Status = 0
             };
         }
 
@@ -558,7 +587,7 @@ namespace OpenForge.Server.PacketHandlers
         {
             return new CNetWhisperRMR(true)
             {
-                Status = 0
+                Status = session.Player.Whisper(data.TargetUserName, data.Message) ? 0 : 1
             };
         }
     }

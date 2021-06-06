@@ -13,48 +13,56 @@ namespace OpenForge.Server.Database
 {
     public abstract class DBObject<T> where T : DBObject<T>
     {
+        private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
         private static readonly object s_initLock = new object();
         private static List<T> s_db = new List<T>();
         private static bool s_isInitialized = false;
 
         public static string DatabaseLocation => $"Database/{typeof(T).Name}/";
+        public string ObjectLocation => $"{DatabaseLocation}/{ObjectID}.json";
 
         public virtual bool MemoryOnly => false;
+
         public string ObjectID { get; set; } = Guid.NewGuid().ToString();
-        public string ObjectLocation => $"{DatabaseLocation}/{ObjectID}.json";
-        private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+        public long LastSave { get; set; } = 0;
 
-        public static void Access(Action<List<T>> act)
+
+        public virtual void Update()
+        {
+            EnsureInitialization();
+            LastSave = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            lock (s_db)
+            {
+                if (!s_db.Contains(this))
+                {
+                    s_db.Add((T)this);
+                }
+            }
+            if (!MemoryOnly)
+            {
+                File.WriteAllText(ObjectLocation, JsonConvert.SerializeObject(this));
+            }
+
+            Logger.Trace(() => $"Database [{typeof(T).Name}] saved object {ObjectID}");
+        }
+        public virtual void Delete()
         {
             EnsureInitialization();
             lock (s_db)
             {
-                act(s_db);
+                s_db.Remove((T)this);
             }
-        }
 
-        public static R Access<R>(Func<List<T>, R> act)
-        {
-            EnsureInitialization();
-            lock (s_db)
-            {
-                return act(s_db);
-            }
+            Logger.Trace(() => $"Database [{typeof(T).Name}] deleted object {ObjectID}");
         }
-
-        public static int Count()
+        public void ReplaceWith(T obj)
         {
+            Logger.Trace(() => $"Database [{typeof(T).Name}] replacing object {ObjectID}");
             EnsureInitialization();
-            return s_db.Count;
-        }
-
-        public static T FirstOrDefault(Func<T, bool> where)
-        {
-            EnsureInitialization();
-            lock (s_db)
-            {
-                return s_db.FirstOrDefault(where);
-            }
+            obj.ObjectID = ObjectID;
+            Delete();
+            obj.Update();
         }
 
         public static void LoadDatabase()
@@ -84,6 +92,35 @@ namespace OpenForge.Server.Database
             Logger.Info($"Initialized Database [{typeof(T).Name}] with {count} objects");
         }
 
+        public static void Access(Action<List<T>> act)
+        {
+            EnsureInitialization();
+            lock (s_db)
+            {
+                act(s_db);
+            }
+        }
+        public static R Access<R>(Func<List<T>, R> act)
+        {
+            EnsureInitialization();
+            lock (s_db)
+            {
+                return act(s_db);
+            }
+        }
+        public static T FirstOrDefault(Func<T, bool> where)
+        {
+            EnsureInitialization();
+            lock (s_db)
+            {
+                return s_db.FirstOrDefault(where);
+            }
+        }
+        public static int Count()
+        {
+            EnsureInitialization();
+            return s_db.Count;
+        }
         public static List<R> Select<R>(Func<T, R> select)
         {
             EnsureInitialization();
@@ -92,7 +129,6 @@ namespace OpenForge.Server.Database
                 return s_db.Select(select).ToList();
             }
         }
-
         public static List<T> Where(Func<T, bool> where)
         {
             EnsureInitialization();
@@ -102,44 +138,6 @@ namespace OpenForge.Server.Database
             }
         }
 
-        public virtual void Delete()
-        {
-            EnsureInitialization();
-
-            lock (s_db)
-            {
-                s_db.Remove((T)this);
-            }
-
-            Logger.Trace(() => $"Database [{typeof(T).Name}] deleted object {ObjectID}");
-        }
-
-        public void ReplaceWith(T obj)
-        {
-            Logger.Trace(() => $"Database [{typeof(T).Name}] replacing object {ObjectID}");
-            EnsureInitialization();
-            obj.ObjectID = ObjectID;
-            Delete();
-            obj.Update();
-        }
-
-        public virtual void Update()
-        {
-            EnsureInitialization();
-            lock (s_db)
-            {
-                if (!s_db.Contains(this))
-                {
-                    s_db.Add((T)this);
-                }
-            }
-            if (!MemoryOnly)
-            {
-                File.WriteAllText(ObjectLocation, JsonConvert.SerializeObject(this));
-            }
-
-            Logger.Trace(() => $"Database [{typeof(T).Name}] saved object {ObjectID}");
-        }
 
         private static void EnsureInitialization()
         {

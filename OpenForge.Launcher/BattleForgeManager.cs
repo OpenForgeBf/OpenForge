@@ -19,43 +19,31 @@ namespace OpenForge.Launcher
         private ListenerSocket _socket = null;
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
-        public void StartClient(IPEndPoint ipEndPoint, string path = null)
+        public string GetConfigPath()
         {
-            Logger.Info("Starting client..");
-            //TODO: Capitalize BattleForge? (capital sensitivity in Linux etc)
-            var configXmlPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "battleforge/config.xml");
+            var configXmlPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BattleForge/config.xml");
+            var configFile = new FileInfo(configXmlPath);
 
+            Directory.CreateDirectory(configFile.Directory.FullName);
+            return configFile.FullName;
+        }
+        public string GetConfig()
+        {
+            var configXmlPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BattleForge/config.xml");
             var configFile = new FileInfo(configXmlPath);
 
             if (configFile.Exists)
-            {
-                Logger.Info("Adjusted server URI in config file.");
-
-                var configXml = File.ReadAllText(configXmlPath);
-
-                var regex = new Regex("<network serveruri=\"([a-z0-9\\.:]+)\"");
-                var match = regex.Match(configXml);
-
-                if (!match.Success)
-                {
-                    Console.WriteLine("Failed to find value in configuration.");
-                    return;
-                }
-
-                var prefix = configXml.Substring(0, match.Captures[0].Index);
-                var offset = match.Captures[0].Index + match.Captures[0].Length;
-                var suffix = configXml[offset..];
-
-                configXml = $"{prefix}<network serveruri=\"{ipEndPoint.Address}:{ipEndPoint.Port}\"{suffix}";
-                File.WriteAllText(configXmlPath, configXml);
-            }
+                return File.ReadAllText(configFile.FullName);
             else
-            {
-                Logger.Info("Created config file.");
+                return File.ReadAllText("config.xml");
+        }
 
-                Directory.CreateDirectory(configFile.Directory.FullName);
-                File.Copy("config.xml", configXmlPath);
-            }
+        public void StartClient(BattleForgeSettings settings, string path = null)
+        {
+            Logger.Info("Starting client..");
+
+            //Replace Config
+            File.WriteAllText(GetConfigPath(), settings.UpdateConfig(GetConfig()));
 
             var battleforgePath = path ?? "Battleforge.exe";
             var workingDirectory = path != null ? Path.GetDirectoryName(battleforgePath) : null;

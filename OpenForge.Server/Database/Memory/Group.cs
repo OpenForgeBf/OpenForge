@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenForge.Server.Enumerations;
 using OpenForge.Server.PacketStructures;
 using OpenForge.Server.PacketStructures.Matchmaking;
 using OpenForge.Server.PacketStructures.World;
@@ -17,14 +18,39 @@ namespace OpenForge.Server.Database.Memory
     public class Group : DBObject<Group>
     {
         private static readonly IndexManager _index = new IndexManager(() => Select(x => x.ID));
-        private static readonly IndexManager _lobbyIndex = new IndexManager();
+
         public ulong ID { get; set; }
         public Player Leader { get; set; }
         public GameLobby Lobby { get; set; }
         public override bool MemoryOnly => true;
         public Match OngoingMatch { get; set; }
-        public List<Player> Players { get; set; } = new List<Player>();
+        public List<Player> Members { get; set; } = new List<Player>();
+        public List<Player> Players
+        {
+            get
+            {
+                lock (Members)
+                {
+                    return new Player[] { Leader }.Concat(Members).ToList();
+                }
+            }
+        }
+
+        public ChatChannel GroupChannel { get; init; }
+        public ChatChannel MatchChannel { get; init; }
+        public ChatChannel[] TeamChannels { get; set; }
         public ulong VersionID { get; set; } = 0;
+
+        public bool HasMembers
+        {
+            get
+            {
+                lock (Members)
+                {
+                    return Members.Any();
+                }
+            }
+        }
 
         public static Group Create(params Player[] players)
         {
@@ -33,7 +59,9 @@ namespace OpenForge.Server.Database.Memory
                 ID = _index.NewIndex(),
                 VersionID = 0,
                 Leader = players[0],
-                Players = players.Skip(1).ToList()
+                Members = players.Skip(1).ToList(),
+                GroupChannel = ChatChannel.Create(ChatChannelType.Group, players.ToArray()),
+                MatchChannel = ChatChannel.Create(ChatChannelType.Group, players.ToArray()),
             };
             group.Update();
             return group;
@@ -60,14 +88,12 @@ namespace OpenForge.Server.Database.Memory
 
         public void AddMember(Player player)
         {
-            lock (Players)
+            if (Players.Contains(player))
             {
-                if (!Players.Contains(player))
-                {
-                    Players.Add(player);
-                }
+                return;
             }
 
+            Members.Add(player);
             VersionID++;
             NotifyGroupUpdate();
             player.SetActiveGroup(this);
@@ -100,13 +126,22 @@ namespace OpenForge.Server.Database.Memory
             Delete();
             VersionID++;
 
-            Leader.LeftGroupNotify(ID);
-            Leader.SetActiveGroup(null);
             foreach (var player in Players)
             {
                 player.SetActiveGroup(null);
                 player.LeftGroupNotify(ID);
             }
+
+            if (TeamChannels != null)
+            {
+                foreach (var channel in TeamChannels)
+                {
+                    ChatChannel.Remove(channel.Id);
+                }
+            }
+
+            ChatChannel.Remove(GroupChannel.Id);
+            ChatChannel.Remove(MatchChannel.Id);
         }
 
         public int GetAvailableSlotIndex()
@@ -119,7 +154,7 @@ namespace OpenForge.Server.Database.Memory
             var players = Lobby.GetPlayers().ToList();
             foreach (var player in players)
             {
-                if (player.Player == null)
+                if (player.Player != null)
                 {
                     continue;
                 }
@@ -171,6 +206,7 @@ namespace OpenForge.Server.Database.Memory
                 Limited = Lobby.Limited,
                 MapChecksum = Lobby.MapChecksum,
                 CombinedChecksum = Lobby.CombinedChecksum,
+                Pvp = Lobby.IsPVP
             };
         }
 
@@ -184,34 +220,26 @@ namespace OpenForge.Server.Database.Memory
             return Players.FirstOrDefault(x => x.ID == id);
         }
 
-        public List<Player> GetPlayers()
-        {
-            var players = new List<Player>
-            {
-                Leader
-            };
-            players.AddRange(Players);
-            return players;
-        }
-
         public CNetWorldGroupVO GetWorldGroup()
         {
-            lock (Players)
+            lock (Members)
             {
                 return new CNetWorldGroupVO()
                 {
                     Id = ID,
                     IdGroup = ID,
                     Leader = Leader.GetWorldPlayer(),
-                    Players = Players.Select(x => x.GetWorldPlayer()).ToArray(),
+                    Players = Members.Select(x => x.GetWorldPlayer()).ToArray(),
                     VersionId = VersionID,
+                    IdChatChannel = (int)GroupChannel.Id,
+                    IdChatServer = 1
                 };
             }
         }
 
         public void NotifyGroupUpdate()
         {
-            SendToMembers(new CNetGroupListUpdatedNotification(true)
+            Send(new CNetGroupListUpdatedNotification(true)
             {
                 Group = GetWorldGroup()
             });
@@ -224,7 +252,7 @@ namespace OpenForge.Server.Database.Memory
                 return;
             }
 
-            SendToMembers(new CNetCustomGameUpdatedNotification(true)
+            Send(new CNetCustomGameUpdatedNotification(true)
             {
                 IdPreMatch = Lobby.ID,
                 IdMap = Lobby.Map.ID,
@@ -236,7 +264,7 @@ namespace OpenForge.Server.Database.Memory
 
         public void NotifyLocation(Player player)
         {
-            SendToMembers(new CNetGroupPlayerChangedLocationNotification(true)
+            Send(new CNetGroupPlayerChangedLocationNotification(true)
             {
                 Player = player.GetWorldPlayer()
             }, player);
@@ -244,9 +272,9 @@ namespace OpenForge.Server.Database.Memory
 
         public void RemoveMember(Player player)
         {
-            lock (Players)
+            lock (Members)
             {
-                Players.RemoveAll(x => x == player);
+                Members.RemoveAll(x => x == player);
             }
 
             VersionID++;
@@ -254,33 +282,30 @@ namespace OpenForge.Server.Database.Memory
 
             NotifyGroupUpdate();
 
-            if (Lobby == null && (OngoingMatch == null || !OngoingMatch.Active) && (Players.Count == 0 || player == Leader))
+            if (Lobby == null && (OngoingMatch == null || !OngoingMatch.Active) && (!HasMembers || player == Leader))
             {
                 Disband();
                 OngoingMatch?.StopGameLoop();
             }
-        }
-
-        public void SendToMembers(object obj, Player exclude = null)
-        {
-            SendToMembers(x => obj, exclude);
-        }
-
-        public void SendToMembers(Func<Player, object> resolve, Player exclude = null)
-        {
-            lock (Players)
+            else if (Lobby != null)
             {
-                if (Leader != exclude)
-                {
-                    Leader.Send(resolve(Leader));
-                }
+                Lobby.ChangeSlot(player, null, -1);
+                NotifyLobbyChanges();
+            }
+        }
 
-                foreach (var player in Players)
+        public void Send(object obj, Player exclude = null)
+        {
+            Send(x => obj, exclude);
+        }
+
+        public void Send(Func<Player, object> resolve, Player exclude = null)
+        {
+            foreach (var player in Players)
+            {
+                if (player != exclude)
                 {
-                    if (player != exclude)
-                    {
-                        player.Send(resolve(player));
-                    }
+                    player.Send(resolve(player));
                 }
             }
         }
@@ -294,7 +319,21 @@ namespace OpenForge.Server.Database.Memory
 
             var seed = (short)new Random(Environment.TickCount).Next(short.MinValue, short.MaxValue + 1);
 
-            OngoingMatch = new Match(Lobby.ID, this, Lobby, GetPlayers());
+            OngoingMatch = new Match(Lobby.ID, this, Lobby, Players);
+
+            if (TeamChannels != null)
+            {
+                foreach (var channel in TeamChannels)
+                {
+                    ChatChannel.Remove(channel.Id);
+                }
+            }
+
+            TeamChannels = new ChatChannel[]
+            {
+                ChatChannel.Create(ChatChannelType.Team, Lobby.Team1.Where(t => t.Player != null).Select(t => t.Player).ToArray()),
+                ChatChannel.Create(ChatChannelType.Team, Lobby.Team2.Where(t => t.Player != null).Select(t => t.Player).ToArray())
+            };
 
             foreach (var player in Lobby.GetPlayers())
             {
@@ -307,10 +346,10 @@ namespace OpenForge.Server.Database.Memory
                 {
                     IdMatch = Lobby.ID,
                     IdMap = Lobby.Map.ID,
-                    IdGameServer = 0,
-                    IdChatServer = 0,
-                    IdGeneralChatChannel = 0,
-                    IdTeamChatChannel = 0,
+                    IdGameServer = 1,
+                    IdChatServer = 1,
+                    IdGeneralChatChannel = (int)MatchChannel.Id,
+                    IdTeamChatChannel = (int)TeamChannels[player.Team - 1].Id,
                     RandomSeed = seed,
                     Players = Lobby.GetPlayers().Select(x => x.GetPlayerObject()).ToArray(),
                     IdTeamStatistic = player.Team - 1,
@@ -335,13 +374,14 @@ namespace OpenForge.Server.Database.Memory
                 Limited = descriptor.Limited,
                 Speedrun = descriptor.Speedrun
             };
-            SendToMembers(GetLobbyCreatedNotification());
+
+            Send(GetLobbyCreatedNotification());
         }
 
         public void StopLobby()
         {
             Lobby = null;
-            SendToMembers(new CNetCustomGameDestroyedNotification(true)
+            Send(new CNetCustomGameDestroyedNotification(true)
             {
                 IdPreMatch = ID
             });

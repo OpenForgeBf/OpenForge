@@ -19,7 +19,7 @@ namespace OpenForge.Launcher
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new Windows.Launcher(true);
+                desktop.MainWindow = new Windows.Launcher(Program.StartServer);
             }
 
             base.OnFrameworkInitializationCompleted();

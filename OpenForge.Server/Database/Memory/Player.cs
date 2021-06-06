@@ -16,6 +16,7 @@ namespace OpenForge.Server.Database.Memory
 {
     public class Player : DBObject<Player>
     {
+        public const string LocalAddress = "127.0.0.1";
         private static readonly IndexManager s_index = new IndexManager(() => GetMaxPlayerIndex());
 
         private IPlayerCoordinator _coordinator = null;
@@ -89,7 +90,7 @@ namespace OpenForge.Server.Database.Memory
 
         public static Player GetLocalAccount()
         {
-            return GetPlayerByAddressOrCreate("127.0.0.1");
+            return GetPlayerByAddressOrCreate(LocalAddress);
         }
 
         public static List<Player> GetOnline()
@@ -98,14 +99,17 @@ namespace OpenForge.Server.Database.Memory
                 x.IsOnline);
         }
 
+        public static List<Player> SearchOnlinePlayers(string wildCard)
+        {
+            return Where(player => player.IsOnline && player.Name.Contains(wildCard, StringComparison.InvariantCultureIgnoreCase));
+        }
+
         public static Player GetPlayerByAddress(string address)
         {
             return Access(db => db.FirstOrDefault(x => x.Address == address));
         }
-
         public static Player GetPlayerByAddressOrCreate(string address, PlayerData data)
             => GetPlayerByAddressOrCreate(address, () => data);
-
         public static Player GetPlayerByAddressOrCreate(string address, Func<PlayerData> creation = null)
         {
             var p = GetPlayerByAddress(address);
@@ -132,7 +136,6 @@ namespace OpenForge.Server.Database.Memory
         {
             return Access(db => db.FirstOrDefault(x => x.ID == id));
         }
-
         public static Player GetPlayerByName(string name)
         {
             return Access(db => db.FirstOrDefault(x => x.Name.ToLower() == name.ToLower()));
@@ -154,24 +157,23 @@ namespace OpenForge.Server.Database.Memory
             return player;
         }
 
-        public static void PlayerJoinedChannel(Player player)
+        public bool Whisper(string name, string message)
         {
-            Broadcast(new CNetJoinChatRegionChannelNotification(true)
+            var target = GetPlayerByName(name);
+            if (target == null)
             {
-                ChannelId = 1,
-                Player = player.GetWorldPlayer(),
-                ChatServerId = 1
-            });
-        }
+                Logger.Warn($"Failed to send whisper '{message}' to user '{message}' because user does not exist.");
+                return false;
+            }
 
-        public static void PlayerLeftChannel(Player player)
-        {
-            Broadcast(new CNetLeaveChatRegionChannelNotification(true)
+            target.GetSession().Send(new CNetWhisperNotification(true)
             {
-                ChannelId = 1,
-                ChatServerId = 1,
-                PlayerId = player.ID
+                Message = message,
+                Player = GetWorldPlayer()
             });
+
+            Logger.Info($"[{Name} -> {target}]: {message}");
+            return true;
         }
 
         public CNetDeckVO AddDeck(CNetDeckVO deck)
@@ -184,7 +186,7 @@ namespace OpenForge.Server.Database.Memory
             return deck;
         }
 
-        public CNetDeckVO CreateOrSave(CNetDeckVO deckToSave)
+        public CNetDeckVO CreateOrSave(CNetDeckVO deckToSave, List<CNetCardVO> playerCards)
         {
             CNetDeckVO deck;
 
@@ -207,6 +209,7 @@ namespace OpenForge.Server.Database.Memory
 
             deck.DeckLevel = deck.CalculateDeckLevel(Cards);
             deck.CoverCard = Cards.FirstOrDefault(c => c.Index == deckToSave.CoverCard.Index) ?? new CNetCardVO();
+            deck.SetCardInfo(playerCards);
             return deck;
         }
 
@@ -222,7 +225,6 @@ namespace OpenForge.Server.Database.Memory
                 return Cards.FirstOrDefault(x => x.Index == id);
             }
         }
-
         public CNetCardVO[] GetCards()
         {
             lock (Cards)
@@ -328,7 +330,14 @@ namespace OpenForge.Server.Database.Memory
 
         public void Send(object obj)
         {
-            _session?.Send(obj);
+            if (_session != null)
+            {
+                _session.Send(obj);
+            }
+            else
+            {
+                Logger.Warn($"Failed to send packet of type {obj.GetType().Name} to player {Name} because the player is offline.");
+            }
         }
 
         public void SetActiveGroup(Group group)
@@ -347,6 +356,16 @@ namespace OpenForge.Server.Database.Memory
 
             //Pushes changes back to local database
             _coordinator?.PushPlayerData(this);
+        }
+
+        public PlayerData GetPlayerData()
+        {
+            return new PlayerData()
+            {
+                Cards = Cards.ToArray(),
+                Decks = Decks.ToArray(),
+                Version =  1
+            };
         }
 
         internal static ulong GetMaxCardIndex() => Count() == 0 ? 1 : Access(db => db.Max(x => x.Cards.Count > 0 ? x.Cards.Max(y => y.Index) : 1));

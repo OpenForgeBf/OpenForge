@@ -64,6 +64,8 @@ The next step is to start the launcher using `OpenForgeLauncher.exe` and that's 
 ### Play
 
 Click the **Play** button to start BattleForge. Any credentials can be used to login.
+
+Ports 7399 TCP and 7400 TCP should be forwarded on the router to be able to play together.
 _______________________________________________________________________________________
 
 ## Getting Started with OpenForge as a developer
@@ -90,7 +92,7 @@ Contributing to OpenForge is done through GitHub, using the Pull Request (PR) sy
 Here is a simple [Guide to Submitting Pull Request](https://www.freecodecamp.org/news/how-to-make-your-first-pull-request-on-github-3/)
 
 In the future, we will have a more defined process & workflow for certain types of content. However, for now here are some basic guidelines for pull requests:
-* Reference an [Issue](https://github.com/OpenForgeBf/OpenForge/issues) in every PR. Format should be OT-<IssueNumber>
+* Reference an [Issue](https://github.com/OpenTournament/OpenTournament/issues) in every PR. Format should be OT-<IssueNumber>
 * Try to make it easy to understand both the intent of your changes and the changes themselves.
 * Limit Scope of PRs as much as possible
 

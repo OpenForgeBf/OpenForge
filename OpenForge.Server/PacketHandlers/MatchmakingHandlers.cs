@@ -24,7 +24,7 @@ namespace OpenForge.Server.PacketHandlers
 
             group.StopLobby();
 
-            if (group.Players.Count == 0)
+            if (!group.HasMembers || group.Leader == session.Player)
             {
                 group.Disband();
             }
@@ -90,7 +90,14 @@ namespace OpenForge.Server.PacketHandlers
 
             group.NotifyGroupUpdate();
             group.StartLobby(data);
-            group.ChangeGameSlot(session.Player, 0, data.IdDeck);
+
+            var groupPlayers = group.Players;
+            for (var i = 0; i < groupPlayers.Count; i++)
+            {
+                var player = groupPlayers[i];
+                group.ChangeGameSlot(player, i, player.ActiveDeck);
+            }
+
             group.NotifyLobbyChanges();
 
             return new CNetCreateCustomGameRMR(true)
@@ -132,6 +139,15 @@ namespace OpenForge.Server.PacketHandlers
         public static CNetJoinOpenCustomGameRMR JoinOpenCustomGameRMC(Session session, CNetJoinOpenCustomGameRMC data)
         {
             var group = Group.GetGroup(data.IdPreMatch);
+
+            if (group == null)
+            {
+                return new CNetJoinOpenCustomGameRMR(true)
+                {
+                    Status = 1
+                };
+            }
+
             group.AddMember(session.Player);
             group.ChangeGameSlot(session.Player, group.GetAvailableSlotIndex(), data.IdDeck);
             group.NotifyLobbyChanges();

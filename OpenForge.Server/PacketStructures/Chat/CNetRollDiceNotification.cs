@@ -11,7 +11,7 @@ namespace OpenForge.Server.PacketStructures.Chat
     public class CNetRollDiceNotification
     {
         public CNetDataHeader Header { get; set; }
-        public long ChannelId { get; set; }
+        public ulong ChannelId { get; set; }
         public CNetWorldPlayerVO Player { get; set; }
         public int MinValue { get; set; }
         public int MaxValue { get; set; }

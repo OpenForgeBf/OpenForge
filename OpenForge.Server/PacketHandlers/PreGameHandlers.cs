@@ -341,7 +341,7 @@ namespace OpenForge.Server.PacketHandlers
 
         public static CNetSaveDeckForCharacterRMR SaveDeckForCharacterRMC(Session session, CNetSaveDeckForCharacterRMC data)
         {
-            var deck = session.Player.CreateOrSave(data.Deck);
+            var deck = session.Player.CreateOrSave(data.Deck, session.Player.Cards);
             session.Player.Update();
 
             return new CNetSaveDeckForCharacterRMR(true)

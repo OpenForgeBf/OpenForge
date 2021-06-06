@@ -286,7 +286,7 @@ namespace OpenForge.Server.PacketHandlers
                 },
             });*/
 
-            group.SendToMembers(player => new CNetMatchFinishedNotification(true)
+            group.Send(player => new CNetMatchFinishedNotification(true)
             {
                 IdMatch = match.ID,
                 IdLootingType = 1,
@@ -352,5 +352,10 @@ namespace OpenForge.Server.PacketHandlers
         public uint WorldCrc { get; set; }
         public uint TurretCrc { get; set; }
         public uint[] AssetCrcs { get; set; }
+    }
+
+    public class CLogMsgPlayerRemove
+    {
+        public long GlobalPlayer { get; set; }
     }
 }

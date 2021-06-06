@@ -10,6 +10,6 @@ namespace OpenForge.Server.PacketStructures.World
     [InterfaceType(InterfaceType.World)]
     public class CNetDeclineRequestDeckRMC
     {
-        public long IdTargetCharacter { get; set; }
+        public ulong IdTargetCharacter { get; set; }
     }
 }

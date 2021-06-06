@@ -2,205 +2,391 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="500"
-        Width="1000" Height="500"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="570"
+        Width="1000" Height="570"
         x:Class="OpenForge.Launcher.Windows.Launcher"
-        Background="#333"
+        Background="#000"
         Title="OpenForge Launcher">
-  <StackPanel Orientation="Vertical">
-    <StackPanel Height="400" Background="#555" Orientation="Horizontal">
-      <Canvas Height="400" Width="700" Background="#000" Canvas.Top="0" Canvas.Left="0">
-        <Image Height="400" Width="700" Source="/Resources/background.jpg" Canvas.Top="0" Canvas.Left="0" Stretch="UniformToFill">
-        </Image>
-        <StackPanel Canvas.Bottom="0" Canvas.Left="0" Width="700" Height="100">
-          <StackPanel.Background>
-            <SolidColorBrush Color="Black" Opacity="0.7"></SolidColorBrush>
-          </StackPanel.Background>
-          <TextBlock Foreground="White" FontSize="25" Margin="10,10,0,0">
-            OpenForge multiplayer available soon!
-          </TextBlock>
-          <TextBlock Foreground="#BBBBBB" Margin="10,0,0,0">
-            Soon you will be able to experience BattleForge with your friends using locally hosted multiplayer!
-          </TextBlock>
-        </StackPanel>
-      </Canvas>
-      <Canvas Width="300" Height="400" Background="#222">
 
-        <!--Choice-->
-        <StackPanel x:Name="interfaceChoice" Width="300" Height="400" Canvas.Top="0" Canvas.Left="0" 
-            IsVisible="False">
-          <TextBlock Foreground="White" Margin="20,50,20,20" TextAlignment="Center" TextWrapping="Wrap">
-            If you intend to play alone, you can simply press play.
-          </TextBlock>
-          <TextBlock Foreground="White" Margin="20,0,20,20" TextAlignment="Center" TextWrapping="Wrap">
-            If you want to play with friends:
-          </TextBlock>
-          <StackPanel Width="300" Height="400">
-            <Button  Margin="30,10,30,0"
-                Height="50"
-                Background="#111" 
-                BorderThickness="1" BorderBrush="#000" 
-                Foreground="White" Command="{Binding ShowJoin}">
-              Join a Friend
-            </Button>
-            <TextBlock TextAlignment="Center" Foreground="White" Margin="0,15,0,0">
-              Or
+  <Canvas>
+
+    <Canvas Name="dragBar" Background="#111" IsHitTestVisible="False" Canvas.Top="0" Canvas.Left="0" Height="70" Width="1000">
+    </Canvas>
+
+    <Canvas Height="70" Canvas.Top="0" Canvas.Left="0" Width="1000">
+
+      <StackPanel Orientation="Horizontal" Width="700" Height="70">
+        <Image Source="/Resources/logo.png" Height="40" Margin="15"></Image>
+      </StackPanel>
+
+      <Button Command="{Binding Close}" Background="#111" BorderBrush="Transparent" Foreground="White" Width="30" Height="30" Canvas.Right="0">
+        <Image Source="/Resources/close3.png"></Image>
+      </Button>
+      <Button Command="{Binding Minimize}" Background="#111" BorderBrush="Transparent" Foreground="White" Width="30" Height="30" Canvas.Right="30">
+        <Image Source="/Resources/minimize.png"></Image>
+      </Button>
+
+
+      <StackPanel Orientation="Horizontal" Canvas.Right="0" Canvas.Top="30">
+        <Button x:Name="menuGame" Background="#171717" BorderThickness="0" Width="92" Height="40" Foreground="White" FontSize="17">
+          Game
+        </Button>
+        <Button x:Name="menuSettings" Background="#131313" BorderThickness="0" Width="92" Height="40" Foreground="White" FontSize="17" Margin="10,0,0,0">
+          Settings
+        </Button>
+        <Button x:Name="menuAbout" Background="#131313" BorderThickness="0" Width="92" Height="40" Foreground="White" FontSize="17" Margin="10,0,0,0">
+          About
+        </Button>
+      </StackPanel>
+    </Canvas>
+    
+
+
+    <StackPanel x:Name="interfaceGame" IsVisible="True" Height="500" Width="1000" Orientation="Vertical" Canvas.Top="70" Canvas.Left="0">
+      <Canvas Height="400" Background="#555">
+        <Canvas Height="400" Width="700" Background="#000" Canvas.Top="0" Canvas.Left="0">
+
+          <Image Height="400" Width="700" Source="/Resources/background2.png" Canvas.Top="0" Canvas.Left="0" Stretch="UniformToFill">
+          </Image>
+
+          <StackPanel Canvas.Bottom="0" Canvas.Left="0" Width="700" Height="150">
+            <StackPanel.Background>
+              <LinearGradientBrush StartPoint="0,100" EndPoint="0,0">
+                <GradientStop Color="#AA000000" Offset="0,0" />
+                <GradientStop Color="#00000000" Offset="0,100" />
+              </LinearGradientBrush>
+              <!--<SolidColorBrush Color="Black" Opacity="0.7"></SolidColorBrush>-->
+            </StackPanel.Background>
+            <TextBlock Foreground="White" FontSize="25" Margin="10,60,0,0">
+              OpenForge multiplayer available soon!
             </TextBlock>
-            <Button  Margin="30,15,30,0"
-                Height="50"
-                Background="#111"
-                BorderThickness="1" BorderBrush="#000"
-                Foreground="White" Command="{Binding ShowHost}">
-              Host a Server
+            <TextBlock Foreground="#BBBBBB" Margin="10,0,0,0">
+              Soon you will be able to experience BattleForge with your friends using locally hosted multiplayer!
+            </TextBlock>
+          </StackPanel>
+        </Canvas>
+
+        <Canvas Width="300" Height="400" Background="#1A1A1A" Canvas.Top="0" Canvas.Right="0">
+
+          <!--Choice-->
+          <StackPanel x:Name="interfaceChoice" Width="300" Height="400" Canvas.Top="0" Canvas.Left="0" 
+              IsVisible="False">
+            <TextBlock Foreground="White" Margin="20,50,20,20" TextAlignment="Center" TextWrapping="Wrap">
+              If you intend to play alone, you can simply press play.
+            </TextBlock>
+            <TextBlock Foreground="White" Margin="20,0,20,20" TextAlignment="Center" TextWrapping="Wrap">
+              If you want to play with friends:
+            </TextBlock>
+            <StackPanel Width="300" Height="400">
+              <Button  Margin="30,10,30,0"
+                  Height="50"
+                  Background="#111" 
+                  BorderThickness="1" BorderBrush="#000" 
+                  Foreground="White" Command="{Binding ShowJoin}">
+                Join a Friend
+              </Button>
+              <TextBlock TextAlignment="Center" Foreground="White" Margin="0,15,0,0">
+                Or
+              </TextBlock>
+              <Button  Margin="30,15,30,0"
+                  Height="50"
+                  Background="#111"
+                  BorderThickness="1" BorderBrush="#000"
+                  Foreground="White" Command="{Binding ShowHost}">
+                Host a Server
+              </Button>
+            </StackPanel>
+
+          </StackPanel>
+
+          <!--Hosting Default-->
+          <StackPanel x:Name="interfaceHosting" Canvas.Left="0" Canvas.Top="0" IsVisible="False"
+              Margin="20,20,20,0"
+              Orientation="Vertical"
+              Width="260" Height="360">
+            <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="25">
+              Hosting Server
+            </TextBlock>
+            <ListBox x:Name="players" Margin="0,10,0,0" Background="#333333" Height="200" Items="{Binding JoinedPlayers}">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Background="#111111">
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Name}" FontSize="15" Margin="10,10,10,0" Width="200" Foreground="White"></TextBlock>
+                    </StackPanel>
+                    <TextBlock Text="{Binding Address}" FontSize="9" Margin="10,0,10,10" Foreground="White"></TextBlock>
+                  </StackPanel>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Button Command="{Binding ShowChoice}" IsVisible="False"
+                Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,10,0,0">
+              Back
+            </Button>
+          </StackPanel>
+        
+
+          <!--Joined-->
+          <StackPanel x:Name="interfaceJoined" Canvas.Left="0" Canvas.Top="0"  IsVisible="False"
+              Margin="20,20,20,0"
+              Orientation="Vertical"
+              Width="260" Height="360">
+            <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="25">
+              Server Joined
+            </TextBlock>
+            <TextBlock Foreground="White" Margin="0,0,0,10" TextWrapping="Wrap">
+              You can now press Play to play with your friend!
+            </TextBlock>
+            <Button Command="{Binding LeaveServer}"
+                Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,10,0,0">
+              Leave Server
             </Button>
           </StackPanel>
 
-        </StackPanel>
+          <StackPanel x:Name="interfaceReconnecting" Canvas.Left="0" Canvas.Top="0"  IsVisible="False"
+              Margin="20,20,20,0"
+              Orientation="Vertical"
+              Width="260" Height="360">
+            <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="25">
+              Server Disconnected
+            </TextBlock>
+            <TextBlock Foreground="White" Margin="0,0,0,10" TextWrapping="Wrap" Text="{Binding ReconnectStatus}">
+            </TextBlock>
+            <ProgressBar IsIndeterminate="True"></ProgressBar>
+            <Button Command="{Binding CancelReconnecting}"
+                Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,10,0,0">
+              Cancel
+            </Button>
+          </StackPanel>
 
-        <!--Hosting Default-->
-        <StackPanel x:Name="interfaceHosting" Canvas.Left="0" Canvas.Top="0" IsVisible="False"
-            Margin="20,20,20,0"
-            Orientation="Vertical"
-            Width="260" Height="360">
-          <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="25">
-            Hosting Server
-          </TextBlock>
-          <ListBox x:Name="players" Margin="0,10,0,0" Background="#333333" Height="200" Items="{Binding JoinedPlayers}">
-            <ListBox.ItemTemplate>
-              <DataTemplate>
-                <StackPanel Background="#111111">
-                  <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" FontSize="15" Margin="10,10,10,0" Width="200" Foreground="White"></TextBlock>
+          <!--Join-->
+          <StackPanel x:Name="interfaceJoin" Canvas.Left="0" Canvas.Top="0"  IsVisible="True"
+              Margin="20,20,20,0"
+              Orientation="Vertical"
+              Width="260" Height="360">
+            <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="25">
+              Join a Friend
+            </TextBlock>
+            <TextBlock Foreground="White" Margin="0,0,0,10" TextWrapping="Wrap">
+              Enter your friend's public IP, ensure that your friend is hosting a server it is allowed through their firewall.
+            </TextBlock>
+            <TextBox Text="{Binding InputJoinAddress}" Watermark="Server Address (eg. 12.32.43.54)" Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White">
+
+            </TextBox>
+            <Button Command="{Binding JoinServer}" Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,2,0,0" IsEnabled="True">
+              Join
+            </Button>
+
+            <Button Command="{Binding ShowChoice}" IsVisible="False"
+                Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,180,0,0">
+              Back
+            </Button>
+          </StackPanel>
+
+          <!--Hosting-->
+          <StackPanel x:Name="interfaceHost" Canvas.Left="0" Canvas.Top="0" IsVisible="False"
+              Margin="20,20,20,0"
+              Orientation="Vertical"
+              Width="260" Height="360">
+            <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="25">
+              Hosting Server
+            </TextBlock>
+            <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0">
+              People can now join your server using your public IP (Ensure your firewall allows this)
+            </TextBlock>
+            <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontWeight="Bold">
+              Players that Joined:
+            </TextBlock>
+            <ListBox x:Name="history" Margin="0,10,0,0" Background="#333333" Height="200">
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Background="#222222">
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Name}" FontSize="15" Margin="10,10,10,0" Width="200"></TextBlock>
+                    </StackPanel>
+                    <TextBlock Text="{Binding Address}" FontSize="9" Margin="10,0,10,10"></TextBlock>
                   </StackPanel>
-                  <TextBlock Text="{Binding Address}" FontSize="9" Margin="10,0,10,10" Foreground="White"></TextBlock>
-                </StackPanel>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Command="{Binding ShowChoice}" 
+                Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,10,0,0">
+              Back
+            </Button>
+          </StackPanel>
 
-          <Button Command="{Binding ShowChoice}" IsVisible="False"
-              Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,10,0,0">
-            Back
-          </Button>
-        </StackPanel>
-        
+          <!--
+          <Canvas Canvas.Top="0" Canvas.Left="0" Width="300" Height="400">
+            <Canvas.Background>
+              <SolidColorBrush Color="Black" Opacity="0.8"></SolidColorBrush>
+            </Canvas.Background>
+          </Canvas>-->
+        </Canvas>
+      </Canvas>
 
-        <!--Joined-->
-        <StackPanel x:Name="interfaceJoined" Canvas.Left="0" Canvas.Top="0"  IsVisible="False"
-            Margin="20,20,20,0"
-            Orientation="Vertical"
-            Width="260" Height="360">
-          <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="25">
-            Server Joined
-          </TextBlock>
-          <TextBlock Foreground="White" Margin="0,0,0,10" TextWrapping="Wrap">
-            You can now press Play to play with your friend!
-          </TextBlock>
-          <Button Command="{Binding LeaveServer}"
-              Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,10,0,0">
-            Leave Server
-          </Button>
-        </StackPanel>
+      <Canvas Height="100" Background="#111">
+        <Button Canvas.Left="10" Canvas.Top="27" Background="Transparent" BorderThickness="0" Command="{Binding Patreon}">
+          <Image Source="/Resources/patreon.png" Width="150"></Image>
+        </Button>
 
-        <!--Join-->
-        <StackPanel x:Name="interfaceJoin" Canvas.Left="0" Canvas.Top="0"  IsVisible="True"
-            Margin="20,20,20,0"
-            Orientation="Vertical"
-            Width="260" Height="360">
-          <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="25">
-            Join a Friend
-          </TextBlock>
-          <TextBlock Foreground="White" Margin="0,0,0,10" TextWrapping="Wrap">
-            Enter your friend's public IP, ensure that your friend is hosting a server it is allowed through their firewall.
-          </TextBlock>
-          <TextBox Text="{Binding InputJoinAddress}" Watermark="Server Address (eg. 12.32.43.54)" Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White">
+        <TextBlock Text="In-Game Name:" FontSize="18" Canvas.Left="205" Canvas.Top="5" Foreground="White"></TextBlock>
+        <TextBox x:Name="inputName" Watermark="Your In-Game Name (Default:Skylord)" Text="{Binding IngameName, Mode=TwoWay}" Canvas.Left="200" Canvas.Top="30" Width="400" FontSize="20"
+          Background="#000" Foreground="#EEE" BorderBrush="#000"></TextBox>
 
-          </TextBox>
-          <Button Command="{Binding JoinServer}" Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,2,0,0" IsEnabled="False">
-            Join
-          </Button>
+        <CheckBox Canvas.Left="650" Canvas.Top="20" Foreground="White" FontSize="15" IsChecked="{Binding DoStartServer}" IsVisible="False">
+          Start Server
+        </CheckBox>
+        <CheckBox Canvas.Left="650" Canvas.Top="50" Foreground="White" FontSize="15" IsChecked="{Binding DoStartClient}" IsVisible="False">
+          Start Client
+        </CheckBox>
 
-          <Button Command="{Binding ShowChoice}" IsVisible="False"
-              Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,180,0,0">
-            Back
-          </Button>
-        </StackPanel>
+        <Button Canvas.Right="215" Canvas.Bottom="10" IsVisible="False"
+            Background="#111" Foreground="#EEE"
+            BorderThickness="1" BorderBrush="Black"
+            Command="{Binding SetPath}"
+            FontSize="9"
+            Width="100" Height="20">
+          Find Battleforge.exe
+        </Button>
 
-        <!--Hosting-->
-        
-        <StackPanel x:Name="interfaceHost" Canvas.Left="0" Canvas.Top="0" IsVisible="False"
-            Margin="20,20,20,0"
-            Orientation="Vertical"
-            Width="260" Height="360">
-          <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="25">
-            Hosting Server
-          </TextBlock>
-          <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0">
-            People can now join your server using your public IP (Ensure your firewall allows this)
-          </TextBlock>
-          <TextBlock Foreground="White" Width="260" TextWrapping="Wrap" Margin="0,10,0,0" FontWeight="Bold">
-            Players that Joined:
-          </TextBlock>
-          <ListBox x:Name="history" Margin="0,10,0,0" Background="#333333" Height="200">
-            <ListBox.ItemTemplate>
-              <DataTemplate>
-                <StackPanel Background="#222222">
-                  <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" FontSize="15" Margin="10,10,10,0" Width="200"></TextBlock>
-                  </StackPanel>
-                  <TextBlock Text="{Binding Address}" FontSize="9" Margin="10,0,10,10"></TextBlock>
-                </StackPanel>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
-          <Button Command="{Binding ShowChoice}" 
-              Background="#111" BorderThickness="1" BorderBrush="#000" Foreground="White" Margin="0,10,0,0">
-            Back
-          </Button>
-        </StackPanel>
-
-        <!--
-        <Canvas Canvas.Top="0" Canvas.Left="0" Width="300" Height="400">
-          <Canvas.Background>
-            <SolidColorBrush Color="Black" Opacity="0.8"></SolidColorBrush>
-          </Canvas.Background>
-        </Canvas>-->
+        <Button x:Name="buttonPlay"
+            Command="{Binding Play}"
+            Canvas.Right="10" Canvas.Top="10" 
+            Height="80" Width="200" 
+            FontSize="26" 
+            Background="#000" Foreground="#EEE"
+            BorderThickness="0">
+          PLAY
+        </Button>
       </Canvas>
     </StackPanel>
-    <Canvas Height="100">
-      <Button Canvas.Left="10" Canvas.Top="27" Background="Transparent" BorderThickness="0" Command="{Binding Patreon}">
-        <Image Source="/Resources/patreon.png" Width="150"></Image>
-      </Button>
 
-      <TextBlock Text="In-Game Name:" FontSize="18" Canvas.Left="205" Canvas.Top="5" Foreground="White"></TextBlock>
-      <TextBox x:Name="inputName" Watermark="Your In-Game Name (Default:Skylord)" Text="{Binding IngameName, Mode=TwoWay}" Canvas.Left="200" Canvas.Top="30" Width="400" FontSize="20"
-        Background="#111" Foreground="#EEE" BorderBrush="#000"></TextBox>
+    <StackPanel x:Name="interfaceAbout" IsVisible="False" Orientation="Vertical" Height="500" Width="1000" Background="#111" Canvas.Top="70" Canvas.Left="0">
+      <Canvas>
+        <StackPanel Orientation="Vertical">
+          <TextBlock Margin="20,20,20,10" Foreground="White" FontSize="20">
+            About
+          </TextBlock>
+          <TextBlock Margin="20,0,20,0" Foreground="#AAA" FontSize="16" TextWrapping="Wrap">
+The OpenForge project is an open source project that allows players to enter the Forge once again by making BattleForge available to 
+play offline or with friends. Support us on Patreon to help us forge OpenForge together as a community.
 
-      <CheckBox Canvas.Left="650" Canvas.Top="20" Foreground="White" FontSize="15" IsChecked="{Binding DoStartServer}" IsVisible="False">
-        Start Server
-      </CheckBox>
-      <CheckBox Canvas.Left="650" Canvas.Top="50" Foreground="White" FontSize="15" IsChecked="{Binding DoStartClient}" IsVisible="False">
-        Start Client
-      </CheckBox>
+In the future it will be possible to invite friends over the internet to join your session and play maps together.
 
-      <Button Canvas.Right="215" Canvas.Bottom="10"
-          Background="#111" Foreground="#EEE"
-          BorderThickness="1" BorderBrush="Black"
-          Command="{Binding SetPath}"
-          FontSize="9"
-          Width="100" Height="20">
-        Find Battleforge.exe
-      </Button>
+The OpenForge project is not a private server.
 
-      <Button x:Name="buttonPlay"
-          Command="{Binding Play}"
-          Canvas.Right="10" Canvas.Top="10" 
-          Height="80" Width="200" 
-          FontSize="26" 
-          Background="#111" Foreground="#EEE"
-          BorderThickness="0">
-        PLAY
-      </Button>
-    </Canvas>
-  </StackPanel>
+Licensed under GNU General Public License v3.0.
+          </TextBlock>
+
+          <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="20,40,40,40">
+            <Button Background="Transparent" BorderThickness="0" Command="{Binding Patreon}">
+              <Image Source="/Resources/patreon.png" Width="150"></Image>
+            </Button>
+            <Button Width="150" Background="#222" BorderThickness="0" Height="37" Command="{Binding Github}">
+              <Image Source="/Resources/github.png" Height="30"></Image>
+            </Button>
+          </StackPanel>
+        </StackPanel>
+        <TextBlock Text="{Binding Version}" Foreground="#EEE" Canvas.Right="10" Canvas.Top="470"></TextBlock>
+      </Canvas>
+    </StackPanel>
+
+    <StackPanel x:Name="interfaceSettings" IsVisible="False" Orientation="Horizontal" Height="500" Width="1000" Background="#111" Canvas.Top="70" Canvas.Left="0">
+
+      <StackPanel Height="500" Width="700">
+        <!--Settings Video-->
+        <StackPanel x:Name="interfaceSettingsVideo" Height="500" Width="700" Background="#222" IsVisible="False">
+          <TextBlock FontSize="30" Foreground="White" Margin="50,20,0,0">Video Settings</TextBlock>
+          <StackPanel Orientation="Vertical" Height="500" Margin="0,30,0,0">
+            <Canvas Margin="20">
+              <TextBlock Canvas.Left="30" Canvas.Top="0" FontSize="20" Foreground="White">Resolution</TextBlock>
+              <ComboBox Canvas.Left="180" Canvas.Top="-2" Items="{Binding Resolutions}" SelectedItem="{Binding Settings.ScreenResolution}" Width="150" Foreground="Black" Background="#EEE" FontSize="20">
+              </ComboBox>
+            </Canvas>
+            <Canvas Margin="20">
+              <TextBlock Canvas.Left="30" Canvas.Top="0" FontSize="20" Foreground="White">FullScreen</TextBlock>
+              <CheckBox IsChecked="{Binding Settings.Fullscreen}" Canvas.Left="180" Canvas.Top="5" Foreground="White" FontSize="20"></CheckBox>
+            </Canvas>
+          </StackPanel>
+        </StackPanel>
+        <!--Settings Audio-->
+        <StackPanel x:Name="interfaceSettingsAudio" Height="500" Width="700" Background="#222" IsVisible="False">
+          <TextBlock FontSize="30" Foreground="White" Margin="50,20,0,0">Audio Settings</TextBlock>
+          <StackPanel Orientation="Vertical" Height="500" Margin="0,30,0,0">
+
+            <Canvas Margin="20">
+              <TextBlock Canvas.Left="30" Canvas.Top="0" FontSize="20" Foreground="White">Vol. Global</TextBlock>
+              <Slider Value="{Binding Settings.VolumeGlobal}" Canvas.Left="180" Width="300" Canvas.Top="5" Foreground="White" FontSize="20" SmallChange="0.01" Maximum="1"></Slider>
+            </Canvas>
+            <Canvas Margin="20">
+              <TextBlock Canvas.Left="30" Canvas.Top="0" FontSize="20" Foreground="White">Vol. Music</TextBlock>
+              <Slider Value="{Binding Settings.VolumeMusic}" Canvas.Left="180" Width="300" Canvas.Top="5" Foreground="White" FontSize="20" SmallChange="0.01" Maximum="1"></Slider>
+            </Canvas>
+            <Canvas Margin="20">
+              <TextBlock Canvas.Left="30" Canvas.Top="0" FontSize="20" Foreground="White">Vol. Speech</TextBlock>
+              <Slider Value="{Binding Settings.VolumeSpeech}" Canvas.Left="180" Width="300" Canvas.Top="5" Foreground="White" FontSize="20" SmallChange="0.01" Maximum="1"></Slider>
+            </Canvas>
+            <Canvas Margin="20">
+              <TextBlock Canvas.Left="30" Canvas.Top="0" FontSize="20" Foreground="White">Vol. UI</TextBlock>
+              <Slider Value="{Binding Settings.VolumeUI}" Canvas.Left="180" Width="300" Canvas.Top="5" Foreground="White" FontSize="20" SmallChange="0.01" Maximum="1"></Slider>
+            </Canvas>
+            <Canvas Margin="20">
+              <TextBlock Canvas.Left="30" Canvas.Top="0" FontSize="20" Foreground="White">Vol. Effects</TextBlock>
+              <Slider Value="{Binding Settings.VolumeFX3D}" Canvas.Left="180" Width="300" Canvas.Top="5" Foreground="White" FontSize="20" SmallChange="0.01" Maximum="1"></Slider>
+            </Canvas>
+
+          </StackPanel>
+        </StackPanel>
+        <!--Settings Game-->
+        <StackPanel x:Name="interfaceSettingsGame" Height="500" Width="700" Background="#222" IsVisible="True">
+          <TextBlock FontSize="30" Foreground="White" Margin="50,20,0,0">Game Settings</TextBlock>
+          <StackPanel Orientation="Vertical" Height="500" Margin="0,30,0,0">
+
+            <Canvas Margin="20">
+              <TextBlock Canvas.Left="30" Canvas.Top="0" FontSize="20" Foreground="White">Game Path</TextBlock>
+              <TextBox Text="{Binding BattleForgePath}" Canvas.Left="180" Canvas.Top="2" FontSize="12" Width="350"></TextBox>
+              <Button Command="{Binding SetPath}" Canvas.Top="2" Canvas.Right="10" Width="120" Height="26" Background="#111" BorderBrush="#111" Foreground="#EEE">
+                Browse..
+              </Button>
+            </Canvas>
+            <Canvas Margin="20">
+              <TextBlock Canvas.Left="30" Canvas.Top="0" FontSize="20" Foreground="White">Skip Intro</TextBlock>
+              <CheckBox IsChecked="{Binding Settings.SkipIntro}" Canvas.Left="180" Canvas.Top="5" Foreground="White" FontSize="20"></CheckBox>
+            </Canvas>
+            <Canvas Margin="20">
+              <TextBlock Canvas.Left="30" Canvas.Top="0" FontSize="20" Foreground="White">Skip EA Logo</TextBlock>
+              <CheckBox IsChecked="{Binding Settings.SkipEA}" Canvas.Left="180" Canvas.Top="5" Foreground="White" FontSize="20"></CheckBox>
+            </Canvas>
+
+
+          </StackPanel>
+        </StackPanel>
+      </StackPanel>
+
+      <StackPanel Height="500" Width="300" Background="#1A1A1A">
+
+        <Button Name="menuSettingsGame" Height="50" Width="300" FontSize="20" Foreground="#FFF" Background="#111" Margin="0,2,0,2" BorderThickness="0">
+          <StackPanel Orientation="Horizontal" Width="200">
+            <Image Width="30" Height="30" Source="/Resources/game.png" Margin="0,0,0,0"></Image>
+            <TextBlock Foreground="#FFF"  Canvas.Left="30" Margin="45,0,0,0">Game</TextBlock>
+          </StackPanel>
+        </Button>
+        <Button Name="menuSettingsVideo" Height="50" Width="300" FontSize="20" Foreground="#FFF" Background="#111" Margin="0,2,0,2" BorderThickness="0">
+          <StackPanel Orientation="Horizontal" Width="200">
+            <Image Width="30" Height="30" Source="/Resources/landscape.png" Margin="0,0,0,0"></Image>
+            <TextBlock Foreground="#FFF"  Canvas.Left="30" Margin="45,0,0,0">Video</TextBlock>
+          </StackPanel>
+        </Button>
+        <Button Name="menuSettingsAudio" Height="50" Width="300" FontSize="20" Foreground="#FFF" Background="#111" Margin="0,2,0,2" BorderThickness="0">
+          <StackPanel Orientation="Horizontal" Width="200">
+            <Image Width="30" Height="30" Source="/Resources/audio.png" Margin="0,0,0,0"></Image>
+            <TextBlock Foreground="#FFF"  Canvas.Left="30" Margin="45,0,0,0">Audio</TextBlock>
+          </StackPanel>
+        </Button>
+      </StackPanel>
+
+    </StackPanel>
+
+  </Canvas>
 </Window>

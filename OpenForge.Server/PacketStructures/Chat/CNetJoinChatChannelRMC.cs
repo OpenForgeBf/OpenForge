@@ -10,6 +10,6 @@ namespace OpenForge.Server.PacketStructures.Chat
     [InterfaceType(InterfaceType.Chat)]
     public class CNetJoinChatChannelRMC
     {
-        public long ChannelId { get; set; }
+        public ulong ChannelId { get; set; }
     }
 }

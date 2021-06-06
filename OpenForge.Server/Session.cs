@@ -49,29 +49,26 @@ namespace OpenForge.Server
 
             _isDisposed = true;
 
-            Player?.Logout();
-
             if (Player != null)
             {
-                Player.PlayerLeftChannel(Player);
-            }
+                Player.Logout();
+                ChatChannel.RemovePlayerFromAllChannels(Player);
 
-            var group = Player?.GetActiveGroup();
-            if (group != null)
-            {
-                if (group.OngoingMatch != null)
+                var group = Player.GetActiveGroup();
+                if (group != null)
                 {
-                    //TODO: Send player leave match
-                }
+                    if (group.OngoingMatch != null)
+                    {
+                        group.OngoingMatch.PlayerLeft(Player);
+                        group.OngoingMatch?.StopIfDisconnected();
+                    }
 
-                group.RemoveMember(Player);
+                    group.RemoveMember(Player);
+                }
             }
 
             _tcpClient.Dispose();
-
             Logger.Info("Session disposed.");
-
-            Player.GetActiveGroup()?.OngoingMatch?.StopIfDisconnected();
         }
 
         public void Send(byte[] response, int size)

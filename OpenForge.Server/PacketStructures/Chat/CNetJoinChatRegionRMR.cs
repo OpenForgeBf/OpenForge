@@ -12,7 +12,7 @@ namespace OpenForge.Server.PacketStructures.Chat
     {
         public CNetDataHeader Header { get; set; }
         public int Status { get; set; }
-        public long ChannelId { get; set; }
+        public ulong ChannelId { get; set; }
         public int ChannelNumber { get; set; }
         public int ChatServerId { get; set; }
         public CNetWorldPlayerVO[] Players { get; set; }
@@ -21,7 +21,7 @@ namespace OpenForge.Server.PacketStructures.Chat
         {
             Header = new CNetDataHeader(InterfaceType.Chat, (int)ChatMessageType.CNetJoinChatRegionRMR, true);
             Status = default(int);
-            ChannelId = default(long);
+            ChannelId = default(ulong);
             ChannelNumber = default(int);
             ChatServerId = default(int);
             Players = default(CNetWorldPlayerVO[]);

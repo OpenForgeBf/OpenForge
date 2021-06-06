@@ -26,6 +26,17 @@ namespace OpenForge.Server.PacketStructures
             return CalculateDeckLevel(this, playerCards);
         }
 
+        public void SetCardInfo(List<CNetCardVO> playerCards)
+        {
+            if(Cards != null)
+            {
+                foreach(CNetDeckCardVO card in Cards)
+                {
+                    card.Card = playerCards.First(pc => pc.Index == card.Index);
+                }
+            }
+        }
+
         public static int CalculateDeckLevel(CNetDeckVO deck, List<CNetCardVO> playerCards)
         {
             var level = 0;

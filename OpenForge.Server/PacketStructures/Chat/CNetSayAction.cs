@@ -10,7 +10,7 @@ namespace OpenForge.Server.PacketStructures.Chat
     [InterfaceType(InterfaceType.Chat)]
     public class CNetSayAction
     {
-        public long ChannelId { get; set; }
+        public ulong ChannelId { get; set; }
         public string Message { get; set; }
         public string Language { get; set; }
     }

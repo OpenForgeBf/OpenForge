@@ -11,14 +11,14 @@ namespace OpenForge.Server.PacketStructures.Chat
     public class CNetLeaveChatRegionChannelNotification
     {
         public CNetDataHeader Header { get; set; }
-        public long ChannelId { get; set; }
+        public ulong ChannelId { get; set; }
         public int ChatServerId { get; set; }
         public ulong PlayerId { get; set; }
 
         public CNetLeaveChatRegionChannelNotification(bool defaultHeader)
         {
             Header = new CNetDataHeader(InterfaceType.Chat, (int)ChatMessageType.CNetLeaveChatRegionChannelNotification, false);
-            ChannelId = default(long);
+            ChannelId = default(ulong);
             ChatServerId = default(int);
             PlayerId = default(ulong);
         }

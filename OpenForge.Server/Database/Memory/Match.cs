@@ -5,11 +5,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using OpenForge.Server.Enumerations;
+using OpenForge.Server.Messages;
+using OpenForge.Server.PacketHandlers;
 using OpenForge.Server.PacketStructures;
 using OpenForge.Server.PacketStructures.Game;
 
@@ -67,7 +70,7 @@ namespace OpenForge.Server.Database.Memory
 
         public void SendCommand(CommandType commandType, byte[] blob)
         {
-            Group.SendToMembers(player => new CNetAnnounceCommandNotification(true)
+            Group.Send(player => new CNetAnnounceCommandNotification(true)
             {
                 Header = new CNetDataHeader()
                 {
@@ -162,7 +165,7 @@ namespace OpenForge.Server.Database.Memory
 
         public bool StopIfDisconnected()
         {
-            if (!Lobby.GetPlayers().Any(x => !x.Disconnected))
+            if (!Lobby.GetPlayers().Any(player => player.Player != null && !player.Disconnected))
             {
                 StopGameLoop();
                 return true;
@@ -182,7 +185,7 @@ namespace OpenForge.Server.Database.Memory
             {
                 var step = ++CurrentStepGenerator;
 
-                Group.SendToMembers(player =>
+                Group.Send(player =>
                     new CNetExecuteToStepNotification(false)
                     {
                         Header = new CNetDataHeader()

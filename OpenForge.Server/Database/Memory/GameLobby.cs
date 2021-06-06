@@ -26,6 +26,8 @@ namespace OpenForge.Server.Database.Memory
                 Team1 = new TeamPlayer[Map.Slots / 2];
                 Team2 = new TeamPlayer[Map.Slots / 2];
             }
+
+
             for (var i = 0; i < Team1.Length; i++)
             {
                 Team1[i] = new TeamPlayer(1);
@@ -64,23 +66,19 @@ namespace OpenForge.Server.Database.Memory
 
         public void ChangeSlot(Player player, CNetDeckVO deck, int slot)
         {
-            foreach (var tp in GetPlayers())
+            var isReady = false;
+            var oldTeamPlayer = GetTeamPlayer(player);
+            if (oldTeamPlayer != null)
             {
-                if (tp.Player != player)
-                {
-                    continue;
-                }
-
-                tp.Clear();
+                isReady = oldTeamPlayer.IsReady;
+                oldTeamPlayer.Clear();
             }
 
-            if (slot < Team1.Length)
+            if (slot >= 0)
             {
-                Team1[slot].Set(player, deck);
-            }
-            else
-            {
-                Team2[slot - Team1.Length].Set(player, deck);
+                var newTeamPlayer = GetTeamPlayer(slot);
+                newTeamPlayer.Set(player, deck);
+                newTeamPlayer.IsReady = isReady;
             }
         }
 
@@ -92,6 +90,11 @@ namespace OpenForge.Server.Database.Memory
         public TeamPlayer GetTeamPlayer(Player player)
         {
             return Team1.FirstOrDefault(x => x.Player == player) ?? Team2.FirstOrDefault(x => x.Player == player);
+        }
+
+        public TeamPlayer GetTeamPlayer(int slot)
+        {
+            return slot < Team1.Length ? Team1[slot] : Team2[slot - Team1.Length];
         }
     }
 
@@ -114,6 +117,7 @@ namespace OpenForge.Server.Database.Memory
         {
             Player = null;
             Deck = null;
+            IsReady = false;
         }
 
         public CNetMatchPlayerVO GetMatchPlayer()

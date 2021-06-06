@@ -15,12 +15,32 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\audio.png" />
     <None Remove="Resources\background.jpg" />
+    <None Remove="Resources\background2.png" />
+    <None Remove="Resources\close.png" />
+    <None Remove="Resources\close2.png" />
+    <None Remove="Resources\close3.png" />
+    <None Remove="Resources\game.png" />
+    <None Remove="Resources\github.png" />
+    <None Remove="Resources\landscape.png" />
+    <None Remove="Resources\logo.png" />
+    <None Remove="Resources\minimize.png" />
     <None Remove="Resources\patreon.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Resources\audio.png" />
     <AvaloniaResource Include="Resources\background.jpg" />
+    <AvaloniaResource Include="Resources\close.png" />
+    <AvaloniaResource Include="Resources\close3.png" />
+    <AvaloniaResource Include="Resources\close2.png" />
+    <AvaloniaResource Include="Resources\game.png" />
+    <AvaloniaResource Include="Resources\landscape.png" />
+    <AvaloniaResource Include="Resources\logo.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Include="Resources\minimize.png" />
     <AvaloniaResource Include="Resources\patreon.png" />
   </ItemGroup>
 
@@ -29,6 +49,14 @@
     <PackageReference Include="Avalonia.Desktop" Version="0.10.0" />
     <PackageReference Include="NLog" Version="4.7.9" />
     <PackageReference Include="ReactiveUI" Version="13.2.18" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\background2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaXaml Include="Resources\github.png" />
   </ItemGroup>
 
   <ItemGroup>

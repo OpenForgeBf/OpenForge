@@ -10,7 +10,7 @@ namespace OpenForge.Server.PacketStructures.Chat
     [InterfaceType(InterfaceType.Chat)]
     public class CNetRollDiceAction
     {
-        public long ChannelId { get; set; }
+        public ulong ChannelId { get; set; }
         public int MinValue { get; set; }
         public int MaxValue { get; set; }
     }
