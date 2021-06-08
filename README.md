@@ -4,9 +4,7 @@
 
 ## Overview
 
-The **OpenForge** project is an **open source** project that allows players to enter the Forge once again by making BattleForge available to play **offline** or **with friends**. Support us on [Patreon](https://www.patreon.com/openforge) to help us forge OpenForge together as a community.
-
-In the future it will be possible to invite friends over the internet to join your session and play maps together.
+The **OpenForge** project is an **open source** project that allows players to enter the Forge once again by making BattleForge available to play **offline** or (online) **with friends**. Support us on [Patreon](https://www.patreon.com/openforge) to help us forge OpenForge together as a community.
 
 The **OpenForge** project is not a private server.
 
