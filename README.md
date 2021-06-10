@@ -18,6 +18,8 @@ The **OpenForge** project is run by volunteer efforts from veteran and amateur d
 * Follow the [Setting Up OpenForge Guide](#SettingUpOpenForge)
 * Join [Discord](https://discord.com/invite/wXvshWrNPK) for real-time communication and collaboration.
 * Check our [Issues](https://github.com/OpenForge/OpenForge/issues)
+* Support us with BTC (bc1qtz9ehlsf0l39dqs52cu0tcm2ucvtehpyukzj22)
+* Support us with ETH (0x34035A04108c1762A77Fa559Ee59693831f27d45)
 * Support us on [Patreon](https://www.patreon.com/openforge)
 
 _______________________________________________________________________________________
